@@ -4,10 +4,6 @@ set -e
 echo "Updating system..."
 sudo apt update && sudo apt upgrade -y
 
-echo "Installing Mosquitto MQTT broker..."
-sudo apt install -y mosquitto mosquitto-clients
-sudo systemctl enable mosquitto
-
 echo "Installing InfluxDB..."
 wget -q https://repos.influxdata.com/influxdb.key
 gpg --dearmor < influxdb.key | sudo tee /usr/share/keyrings/influxdb-archive-keyring.gpg > /dev/null
