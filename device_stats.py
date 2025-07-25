@@ -27,7 +27,7 @@ def run_ping_test(target="10.42.0.2"):
 def log_data():
     getmemory = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.7.0')
     readmemory = getmemory.read()
-    free_memory = re.findall(r'"(.*?)"', readmemory)[0]
+    free_memory = int(readmemory.strip().split()[-1])
 
     getserial = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0')
     readserial = getserial.read()
