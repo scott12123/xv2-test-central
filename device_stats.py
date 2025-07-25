@@ -40,7 +40,7 @@ def log_data():
 
     point = Point("wifi_test") \
         .tag("serial_number", serial_number) \
-        .tag("free_memory", free_memory) \
+        .field("free_memory", free_memory) \
         .field("ping_device", ping if ping is not None else 0.0) \
         .time(timestamp)
 
