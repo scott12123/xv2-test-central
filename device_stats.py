@@ -28,9 +28,22 @@ def run_ping_test(target="10.42.0.2"):
     return None
 
 def log_data():
-    def get_snmp_value(command, default=0):
-        result = os.popen(command).read().strip().split()
-        return int(result[-1]) if result else default
+    def get_snmp_value(command, default=0, retries=3, timeout=5):
+        for attempt in range(retries):
+            try:
+                result = subprocess.run(
+                    command, shell=True, text=True, capture_output=True, timeout=timeout
+                )
+                if result.returncode == 0:
+                    output = result.stdout.strip().split()
+                    return int(output[-1]) if output else default
+                else:
+                    print(f"SNMP command failed (attempt {attempt + 1}): {result.stderr}")
+            except subprocess.TimeoutExpired:
+                print(f"SNMP command timed out (attempt {attempt + 1})")
+            except Exception as e:
+                print(f"Error executing SNMP command (attempt {attempt + 1}): {e}")
+        return default
 
     free_memory = get_snmp_value('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.7.0')
     print("Free memory:", free_memory)
@@ -42,9 +55,23 @@ def log_data():
     print("AP Clients:", apclients)
 
     # Serial number extraction
-    readserial = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0').read()
-    serial_matches = re.findall(r'"(.*?)"', readserial)
-    serial_number = serial_matches[0] if serial_matches else "Unknown"
+    try:
+        result = subprocess.run(
+            'snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0',
+            shell=True, text=True, capture_output=True, timeout=5
+        )
+        if result.returncode == 0:
+            serial_matches = re.findall(r'"(.*?)"', result.stdout)
+            serial_number = serial_matches[0] if serial_matches else "Unknown"
+        else:
+            serial_number = "Unknown"
+            print(f"Failed to get serial number: {result.stderr}")
+    except subprocess.TimeoutExpired:
+        serial_number = "Unknown"
+        print("Serial number command timed out")
+    except Exception as e:
+        serial_number = "Unknown"
+        print(f"Error getting serial number: {e}")
     print("Serial Number:", serial_number)
 
     # Interference and noise floor extraction
