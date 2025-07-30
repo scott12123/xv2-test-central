@@ -102,7 +102,7 @@ def log_data():
         .field("interference", interference) \
         .field("noisefloor", noisefloor) \
         .field("apclients", apclients) \
-        .field("device_up", ping if ping is not None else 0.0) \
+        .field("device_up", ping) \
         .time(timestamp)
 
     write_api.write(bucket=INFLUXDB_BUCKET, org=INFLUXDB_ORG, record=point)
