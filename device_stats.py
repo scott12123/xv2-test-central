@@ -29,6 +29,7 @@ def run_ping_test(target="10.42.0.2"):
 
 def log_data():
     def get_snmp_value(command, default=0, retries=3):
+        """Execute SNMP command and return the extracted integer value."""
         for attempt in range(retries):
             try:
                 result = subprocess.run(
@@ -36,7 +37,12 @@ def log_data():
                 )
                 if result.returncode == 0:
                     output = result.stdout.strip().split()
-                    return int(output[-1]) if output else default
+                    if output:
+                        # Strip quotes and convert to integer
+                        value = output[-1].strip('"')
+                        return int(value)
+                    else:
+                        return default
                 else:
                     print(f"SNMP command failed (attempt {attempt + 1}): {result.stderr}")
             except subprocess.TimeoutExpired:
