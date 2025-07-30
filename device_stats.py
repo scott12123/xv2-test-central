@@ -23,10 +23,10 @@ def run_ping_test(target="10.42.0.2"):
         for line in output.split("\n"):
             if "avg" in line:
                 return float(line.split('/')[4])
-            return "1"
+            return 1
     except Exception as e:
         print("Error in ping test:", e)
-    return "0"
+    return 0
 
 def log_data():
     def get_snmp_value(command, default=0, retries=3):
