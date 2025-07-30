@@ -28,11 +28,11 @@ def run_ping_test(target="10.42.0.2"):
     return None
 
 def log_data():
-    def get_snmp_value(command, default=0, retries=3, timeout=5):
+    def get_snmp_value(command, default=0, retries=3):
         for attempt in range(retries):
             try:
                 result = subprocess.run(
-                    command, shell=True, text=True, capture_output=True, timeout=timeout
+                    command, shell=True, text=True, capture_output=True
                 )
                 if result.returncode == 0:
                     output = result.stdout.strip().split()
@@ -45,20 +45,20 @@ def log_data():
                 print(f"Error executing SNMP command (attempt {attempt + 1}): {e}")
         return default
 
-    free_memory = get_snmp_value('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.7.0')
+    free_memory = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.7.0')
     print("Free memory:", free_memory)
 
-    cpu_utilisation = get_snmp_value('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.6.0')
+    cpu_utilisation = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.6.0')
     print("CPU Utilisation:", cpu_utilisation)
 
-    apclients = get_snmp_value('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.14.0')
+    apclients = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.14.0')
     print("AP Clients:", apclients)
 
     # Serial number extraction
     try:
         result = subprocess.run(
-            'snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0',
-            shell=True, text=True, capture_output=True, timeout=5
+            'snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0',
+            shell=True, text=True, capture_output=True
         )
         if result.returncode == 0:
             serial_matches = re.findall(r'"(.*?)"', result.stdout)
@@ -75,10 +75,10 @@ def log_data():
     print("Serial Number:", serial_number)
 
     # Interference and noise floor extraction
-    interference = get_snmp_value('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
+    interference = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
     print("Interference:", interference)
 
-    noisefloor = get_snmp_value('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
+    noisefloor = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
     print("Noise Floor:", noisefloor)
 
     ping = run_ping_test()
