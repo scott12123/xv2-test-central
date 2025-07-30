@@ -14,6 +14,9 @@ from config import INFLUXDB_URL, INFLUXDB_TOKEN, INFLUXDB_ORG, INFLUXDB_BUCKET
 client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
+# Get hostname as device ID
+device_id = socket.gethostname()
+
 def run_ping_test(target="10.42.0.2"):
     try:
         output = subprocess.check_output(f"ping -c 4 {target}", shell=True).decode()
@@ -43,11 +46,11 @@ def log_data():
 
     getinterference = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
     readinterference = getinterference.read()
-    interference = re.findall(r'"(.*?)"', readinterference)[0]
+    interference = int(re.findall(r'"(.*?)"', readinterference)[0])
 
     getnoisefloor = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
     readnoisefloor = getnoisefloor.read()
-    noisefloor = re.findall(r'"(.*?)"', readnoisefloor)[0]
+    noisefloor = int(re.findall(r'"(.*?)"', readnoisefloor)[0])
 
     ping = run_ping_test()
 
@@ -56,6 +59,7 @@ def log_data():
 
     point = Point("wifi_test") \
         .tag("serial_number", serial_number) \
+        .tag("device", device_id) \
         .field("free_memory", free_memory) \
         .field("cpu_utilisation", cpu_utilisation) \
         .field("interference", interference) \
