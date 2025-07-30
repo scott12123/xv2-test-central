@@ -75,10 +75,10 @@ def log_data():
     print("Serial Number:", serial_number)
 
     # Interference and noise floor extraction
-    interference = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
+    interference = int(get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0'))
     print("Interference:", interference)
 
-    noisefloor = get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
+    noisefloor = int(get_snmp_value('snmpget -v 2c -c private -t 10 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0'))
     print("Noise Floor:", noisefloor)
 
     ping = run_ping_test()
