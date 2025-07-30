@@ -42,19 +42,18 @@ def log_data():
 
     getserial = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0')
     readserial = getserial.read()
-    serial_matches = re.findall(r'"(.*?)"', readserial)[0]
+    serial_matches = re.findall(r'"(.*?)"', readserial)
     serial_number = serial_matches[0] if serial_matches else "Unknown"
 
     getinterference = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
     readinterference = getinterference.read()
-    interference_matches = re.findall(r'"(.*?)"', readinterference)[0]
+    interference_matches = re.findall(r'"(.*?)"', readinterference)
     interference = int(interference_matches[0]) if interference_matches else 0
 
     getnoisefloor = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
     readnoisefloor = getnoisefloor.read()
-    noisefloor_matches = re.findall(r'"(.*?)"', readnoisefloor)[0]
+    noisefloor_matches = re.findall(r'"(.*?)"', readnoisefloor)
     noisefloor = int(noisefloor_matches[0]) if noisefloor_matches else 0
-
 
     ping = run_ping_test()
 
