@@ -31,32 +31,39 @@ def log_data():
     getmemory = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.7.0')
     readmemory = getmemory.read()
     free_memory = int(readmemory.strip().split()[-1]) if readmemory.strip().split() else 0
+    print("Free memory:", free_memory)
 
     getcpu = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.6.0')
     readcpu = getcpu.read()
     cpu_utilisation = int(readcpu.strip().split()[-1]) if readcpu.strip().split() else 0
+    print("CPU Utilisation:", cpu_utilisation)
 
     getclients = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.14.0')
     readclients = getclients.read()
     apclients = int(readclients.strip().split()[-1]) if readclients.strip().split() else 0
+    print("AP Clients:", apclients)
 
     getserial = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0')
     readserial = getserial.read()
     serial_matches = re.findall(r'"(.*?)"', readserial)
     serial_number = serial_matches[0] if serial_matches else "Unknown"
+    print("Serial Number:", serial_number)
 
     getinterference = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
     readinterference = getinterference.read()
     interference_matches = re.findall(r'"(.*?)"', readinterference)
     interference = int(interference_matches[0]) if interference_matches else 0
+    print("Interference:", interference)
 
     getnoisefloor = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
     readnoisefloor = getnoisefloor.read()
     noisefloor_matches = re.findall(r'"(.*?)"', readnoisefloor)
     noisefloor = int(noisefloor_matches[0]) if noisefloor_matches else 0
+    print("Noise Floor:", noisefloor)
 
     ping = run_ping_test()
-
+    print("Ping to device:", ping)
+    
     melbourne_tz = pytz.timezone("Australia/Melbourne")
     timestamp = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(melbourne_tz)
 
