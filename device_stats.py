@@ -19,13 +19,14 @@ device_id = socket.gethostname()
 
 def run_ping_test(target="10.42.0.2"):
     try:
-        output = subprocess.check_output(f"ping -c 4 {target}", shell=True).decode()
+        output = subprocess.check_output(f"ping -c 2 {target}", shell=True).decode()
         for line in output.split("\n"):
             if "avg" in line:
                 return float(line.split('/')[4])
+            return "1"
     except Exception as e:
         print("Error in ping test:", e)
-    return None
+    return "0"
 
 def log_data():
     def get_snmp_value(command, default=0, retries=3):
@@ -101,7 +102,7 @@ def log_data():
         .field("interference", interference) \
         .field("noisefloor", noisefloor) \
         .field("apclients", apclients) \
-        .field("ping_device", ping if ping is not None else 0.0) \
+        .field("device_up", ping if ping is not None else 0.0) \
         .time(timestamp)
 
     write_api.write(bucket=INFLUXDB_BUCKET, org=INFLUXDB_ORG, record=point)
