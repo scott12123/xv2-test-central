@@ -29,9 +29,25 @@ def log_data():
     readmemory = getmemory.read()
     free_memory = int(readmemory.strip().split()[-1])
 
+    getcpu = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.6.0')
+    readcpu = getcpu.read()
+    cpu_utilisation = int(readcpu.strip().split()[-1])
+
+    getclients = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.14.0')
+    readclients = getclients.read()
+    apclients = int(readclients.strip().split()[-1])
+
     getserial = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.1.1.4.0')
     readserial = getserial.read()
     serial_number = re.findall(r'"(.*?)"', readserial)[0]
+
+    getinterference = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.17.0')
+    readinterference = getinterference.read()
+    interference = re.findall(r'"(.*?)"', readinterference)[0]
+
+    getnoisefloor = os.popen('snmpget -v 2c -c private 10.42.0.2 .1.3.6.1.4.1.17713.22.1.2.1.16.0')
+    readnoisefloor = getnoisefloor.read()
+    noisefloor = re.findall(r'"(.*?)"', readnoisefloor)[0]
 
     ping = run_ping_test()
 
@@ -41,6 +57,10 @@ def log_data():
     point = Point("wifi_test") \
         .tag("serial_number", serial_number) \
         .field("free_memory", free_memory) \
+        .field("cpu_utilisation", cpu_utilisation) \
+        .field("interference", interference) \
+        .field("noisefloor", noisefloor) \
+        .field("apclients", apclients) \
         .field("ping_device", ping if ping is not None else 0.0) \
         .time(timestamp)
 
